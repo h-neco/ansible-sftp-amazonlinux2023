@@ -1,0 +1,11 @@
+- name: Enable cron service
+  systemd:
+    name: crond.service
+    state: started
+    enabled: yes
+
+- name: Enable rsyslog service
+  systemd:
+    name: rsyslog.service
+    state: started
+    enabled: yes

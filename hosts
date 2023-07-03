@@ -1,0 +1,6 @@
+[localhost]
+localhost ansible_connection=local
+
+[sftp]
+sftp-server-ip
+sftp-server-ip

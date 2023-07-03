@@ -1,0 +1,7 @@
+- name: Distribute /etc/profile
+  template:
+    src: ../template/etc/profile.j2
+    dest: /etc/profile
+    owner: root
+    group: root
+    mode: "0644"

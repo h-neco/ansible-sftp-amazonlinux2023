@@ -1,0 +1,23 @@
+---
+- name: Install CloudWatch Agent package
+  dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - amazon-cloudwatch-agent
+    - collectd
+
+- name: Configure CloudWatch Agent
+  template:
+    src: cloudwatch-agent-config.json.j2
+    dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+
+- name: Start CloudWatch Agent
+  service:
+    name: amazon-cloudwatch-agent
+    state: started
+    enabled: yes
+
+- name: Fetch Amazon CloudWatch Agent config
+  command: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+  when: cloudwatch_agent['fetch_cw_agent_config']

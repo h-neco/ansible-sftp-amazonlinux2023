@@ -1,0 +1,12 @@
+---
+- name: Configure Servers
+  hosts: sftp
+  become: true
+  vars_files:
+    - variables/setting.yml
+  roles:
+    - common
+    - cloudwatch-agent
+    - efs-mount
+    - ssh-user
+    - sftp-user

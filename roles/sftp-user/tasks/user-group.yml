@@ -1,0 +1,27 @@
+- name: Create user group
+  become: true
+  group:
+    name: "{{ item.value.group }}"
+    state: present
+  loop: "{{ sftp_users | dict2items }}"
+
+- name: Create user sub group
+  become: true
+  group:
+    name: "{{ item.value.sub_group }}"
+    state: present
+  loop: "{{ sftp_users | dict2items }}"
+  when: item.value.sub_group is defined
+
+- name: Add users to sub-group
+  user:
+    name: "{{ item.key }}"
+    groups: "{{ item.value.sub_group }},{{ item.value.group }}"
+    append: true
+  loop: "{{ sftp_users | dict2items }}"
+  register: user_result
+
+- name: Debug user changes
+  debug:
+    msg: "{{ item.item.key }}: {{ item.changed }}"
+  loop: "{{ user_result.results }}"

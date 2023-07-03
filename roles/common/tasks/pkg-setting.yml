@@ -1,0 +1,37 @@
+- name: Check if sftp.log file exists
+  stat:
+    path: /var/log/sftp.log
+  register: sftp_log_file
+
+- name: Create sftp.log file if it doesn't exist
+  file:
+    path: /var/log/sftp.log
+    state: touch
+    mode: '0644'
+    owner: root
+    group: root
+  when: not sftp_log_file.stat.exists
+
+- name: Distribute logrotate.conf
+  template:
+    src: ../template/etc/logrotate.d/rsyslog.j2
+    dest: /etc/logrotate.d/rsyslog
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Distribute rsyslog.conf
+  template:
+    src: ../template/etc/rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Distribute sshd_config
+  template:
+    src: ../template/etc/ssh/sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0644"

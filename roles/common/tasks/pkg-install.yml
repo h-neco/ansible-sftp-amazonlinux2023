@@ -1,0 +1,9 @@
+- name: Install Command
+  dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - git
+    - vim
+    - cronie
+    - rsyslog

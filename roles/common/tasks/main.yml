@@ -1,0 +1,4 @@
+- include_tasks: pkg-install.yml
+- include_tasks: pkg-setting.yml
+- include_tasks: pkg-start.yml
+- include_tasks: profile-setting.yml

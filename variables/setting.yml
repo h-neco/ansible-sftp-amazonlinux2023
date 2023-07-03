@@ -1,0 +1,21 @@
+sftp_users:
+  test1234:
+    group: "aiueo"
+    sub_group: "kakikukeko"
+  test5678:
+    group: "aiueo"
+    sub_group: "sashisuseso"
+ssh_users:
+  testssh:
+    group: "aiueo"
+    sub_group: "testssh"
+    ssh: true
+efs_mounts:
+  efs_stg:
+    efs_file_system_id: "fs-xxxxxxxxxxxxx"
+    mount_point: "/efs/stg"
+  efs_prod:
+    efs_file_system_id: "fs-xxxxxxxxxxxxx"
+    mount_point: "/efs/prod"
+cloudwatch_agent:
+  fetch_cw_agent_config: true

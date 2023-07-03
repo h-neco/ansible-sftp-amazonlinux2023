@@ -1,0 +1,29 @@
+---
+- name: Install Amazon EFS Utilities
+  yum:
+    name: amazon-efs-utils
+    state: present
+
+- name: Create Mount Points
+  file:
+    path: "{{ item.value.mount_point }}"
+    state: directory
+    mode: '0755'
+  loop: "{{ efs_mounts | dict2items }}"
+
+- name: Append EFS Mounts to fstab
+  lineinfile:
+    path: /etc/fstab
+    line: "{{ item.value.efs_file_system_id }}.efs.ap-northeast-1.amazonaws.com:/ {{ item.value.mount_point }} efs defaults,_netdev 0 0"
+    create: yes
+    insertafter: EOF
+  loop: "{{ efs_mounts | dict2items }}"
+
+- name: Mount EFS File Systems
+  mount:
+    path: "{{ item.value.mount_point }}"
+    src: "{{ item.value.efs_file_system_id }}.efs.ap-northeast-1.amazonaws.com:/"
+    fstype: efs
+    opts: defaults,_netdev
+    state: mounted
+  loop: "{{ efs_mounts | dict2items }}"

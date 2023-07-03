@@ -1,0 +1,50 @@
+- name: Useradd
+  user:
+    name: "{{ item.key }}"
+    group: "{{ item.value.group }}"
+    generate_ssh_key: yes
+    home: "/home/{{ item.key }}"
+    shell: "/usr/sbin/nologin"
+  loop: "{{ sftp_users | dict2items }}"
+
+- name: Configure SFTP authorized_keys
+  authorized_key:
+    user: "{{ item.key }}"
+    state: present
+    key: "{{ lookup('file', 'public_keys/' ~ item.key ~ '.key.pub') }}"
+    path: "/home/{{ item.key }}/.ssh/authorized_keys"
+  loop: "{{ sftp_users | dict2items }}"
+
+- name: Set ownership of ChrootDirectory
+  file:
+    path: "/home/{{ item.key }}"
+    owner: root
+    group: root
+    mode: "0755"
+  loop: "{{ sftp_users | dict2items }}"
+
+- name: Create efs directory
+  file:
+    path: "/home/{{ item.key }}/efs"
+    state: directory
+    mode: "0775"
+    group: "web"
+  loop: "{{ sftp_users | dict2items }}"
+
+- name: Mount NAS directory Staging
+  mount:
+    src: "{{ efs_mounts['efs_stg'].efs_file_system_id }}.efs.ap-northeast-1.amazonaws.com:/efs/stg/"
+    path: "/home/{{ item.username }}/{{ efs_mounts['efs_stg'].mount_point }}"
+    fstype: nfs
+    opts: "defaults,_netdev"
+    state: mounted
+  loop: "{{ sftp_users | dict2items }}"
+
+- name: Mount NAS directory Production
+  mount:
+    src: "{{ efs_mounts['efs_prod'].efs_file_system_id }}.efs.ap-northeast-1.amazonaws.com:/efs/prod/"
+    path: "/home/{{ item.username }}/{{ efs_mounts['efs_prod'].mount_point }}"
+    fstype: nfs
+    opts: "defaults,_netdev"
+    state: mounted
+  loop: "{{ sftp_users | dict2items }}"
